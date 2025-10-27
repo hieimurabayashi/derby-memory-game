@@ -33,9 +33,11 @@ export const DerbyCard: React.FC<Props> = ({ name, isFlipped, isMatched, onPress
   );
 };
 
+
 const styles = StyleSheet.create({
   card: {
-    width: '23%',
+    // 変更点: 1行に5枚表示するため幅を調整
+    width: '18%', // 以前は '23%'
     aspectRatio: 2 / 3,
     margin: '1%',
     justifyContent: 'center',
@@ -53,7 +55,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   text: {
-    fontSize: 10,
+    // 変更点: 幅が狭くなるためフォントを少し小さくする
+    fontSize: 9, // 以前は 10
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#000000',
