@@ -5,23 +5,25 @@ import {
   SafeAreaView,
   Button,
   ScrollView,
-  Modal, // ★ Alert の代わりに Modal を使う
-  Text,  // ★ Modal の中で Text を使う
+  Modal,
+  Text,
 } from 'react-native';
 
 import { DERBY_LIST } from './src/data/derbies';
 import { DerbyCard } from './src/components/DerbyCard';
 
-// (CardState, createShuffledBoard 関数は変更なし)
+// ★変更点★ CardState インターフェースに teamImage を追加
 interface CardState {
   cardId: number;
   derbyGroupId: number;
-  teamName: string;
+  teamName: string;   // テキストのアラート用に残しておく
+  teamImage: any;     // ★画像データ用
   derbyName: string;
   isFlipped: boolean;
   isMatched: boolean;
 }
 
+// ★変更点★ createShuffledBoard 関数で teamImage もセットするように変更
 const createShuffledBoard = (): CardState[] => {
   const teamCards: Omit<CardState, 'cardId' | 'isFlipped' | 'isMatched'>[] = [];
 
@@ -29,11 +31,13 @@ const createShuffledBoard = (): CardState[] => {
     teamCards.push({
       derbyGroupId: derby.id,
       teamName: derby.team1,
+      teamImage: derby.team1Image, // ★画像データを追加
       derbyName: derby.name,
     });
     teamCards.push({
       derbyGroupId: derby.id,
       teamName: derby.team2,
+      teamImage: derby.team2Image, // ★画像データを追加
       derbyName: derby.name,
     });
   });
@@ -54,21 +58,10 @@ export default function App() {
   const [selectedCards, setSelectedCards] = useState<CardState[]>([]);
   const [isChecking, setIsChecking] = useState(false);
 
-  // ★ Modal（モーダル）用の状態を追加
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
   const [modalText, setModalText] = useState("");
 
-  // (クリア判定の useEffect は変更なし)
-  useEffect(() => {
-    if (board.length > 0 && board.every(card => card.isMatched)) {
-      // クリア時はアラートのままでも良いが、一貫性のためにモーダルにする
-      setModalText("コンプリート！\n全てのダービーを見つけました！");
-      setIsModalVisible(true);
-      // Alert.alert(...)
-    }
-  }, [board]);
-
-  // (2枚選択の useEffect は変更なし)
   useEffect(() => {
     if (selectedCards.length === 2) {
       setIsChecking(true);
@@ -76,7 +69,6 @@ export default function App() {
     }
   }, [selectedCards]);
 
-  // (handleCardPress は変更なし)
   const handleCardPress = (pressedCard: CardState) => {
     if (isChecking || pressedCard.isFlipped || pressedCard.isMatched) {
       return;
@@ -89,12 +81,12 @@ export default function App() {
     setSelectedCards([...selectedCards, pressedCard]);
   };
 
-  // ★ マッチ判定 (Alert を Modal に変更)
   const checkMatch = () => {
     const [first, second] = selectedCards;
 
     if (first.derbyGroupId === second.derbyGroupId) {
-      // --- マッチした ---
+      const isGameComplete = board.filter(card => !card.isMatched).length === 2;
+
       setBoard(prevBoard =>
         prevBoard.map(card =>
           card.derbyGroupId === first.derbyGroupId
@@ -103,15 +95,21 @@ export default function App() {
         )
       );
       
-      // ★ Alert.alert の代わりに Modal の内容と表示を設定
-      setModalText(
-        `「${first.teamName}」 vs 「${second.teamName}」\n\n${first.derbyName}です！`
-      );
-      setIsModalVisible(true);
+      if (isGameComplete) {
+        setModalTitle("🎉コンプリート！🎉");
+        setModalText(
+          `「${first.teamName}」 vs 「${second.teamName}」\n\n${first.derbyName}です！\n\n全てのダービーを見つけました！`
+        );
+        setIsModalVisible(true);
+      } else {
+        setModalTitle("マッチ！");
+        setModalText(
+          `「${first.teamName}」 vs 「${second.teamName}」\n\n${first.derbyName}です！`
+        );
+        setIsModalVisible(true);
+      }
 
-      // resetTurn() はモーダルを閉じる時に呼ぶため、ここでは呼ばない
     } else {
-      // --- マッチしない ---
       setTimeout(() => {
         setBoard(prevBoard =>
           prevBoard.map(card =>
@@ -120,34 +118,30 @@ export default function App() {
               : card
           )
         );
-        resetTurn(); // マッチしない時は通常通りリセット
+        resetTurn();
       }, 1000);
     }
   };
 
-  // ターンをリセット
   const resetTurn = () => {
     setSelectedCards([]);
     setIsChecking(false);
   };
 
-  // ゲームリセット (クリアモーダルも閉じる)
   const resetGame = () => {
     setBoard(createShuffledBoard());
     setSelectedCards([]);
     setIsChecking(false);
-    setIsModalVisible(false); // ★ モーダルを閉じる
+    setIsModalVisible(false);
   };
 
-  // ★ モーダルを閉じるための関数
   const closeModal = () => {
+    setIsModalVisible(false);
+
     const allMatched = board.every(card => card.isMatched);
     if (allMatched) {
-      // クリア後のモーダルならリセット
       resetGame();
     } else {
-      // 途中のマッチならターンだけリセット
-      setIsModalVisible(false);
       resetTurn();
     }
   };
@@ -160,7 +154,8 @@ export default function App() {
           {board.map(card => (
             <DerbyCard
               key={card.cardId}
-              teamName={card.teamName}
+              // teamName={card.teamName} // ★ teamName の代わりに teamImage を渡す
+              teamImage={card.teamImage} // ★ 画像データを渡す
               isFlipped={card.isFlipped}
               isMatched={card.isMatched}
               onPress={() => handleCardPress(card)}
@@ -170,28 +165,26 @@ export default function App() {
         <Button title="リセット" onPress={resetGame} color="#CC0000" />
       </ScrollView>
 
-      {/* ★★★ ここからModalを追加 ★★★ */}
       <Modal
         visible={isModalVisible}
-        transparent={true} // 背景を透明に
-        animationType="fade" // フェードイン
-        onRequestClose={closeModal} // (Androidの戻るボタン用)
+        transparent={true}
+        animationType="fade"
+        onRequestClose={closeModal}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>マッチ！</Text>
+            <Text style={styles.modalTitle}>{modalTitle}</Text>
             <Text style={styles.modalBody}>{modalText}</Text>
             <Button title="OK" onPress={closeModal} />
           </View>
         </View>
       </Modal>
-      {/* ★★★ ここまで ★★★ */}
       
     </SafeAreaView>
   );
 }
 
-// --- スタイル (Modal用スタイルを追加) ---
+// --- スタイル (変更なし) ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -211,11 +204,9 @@ const styles = StyleSheet.create({
     maxWidth: 500,
     marginBottom: 20,
   },
-
-  // ★★★ ここからModal用スタイルを追加 ★★★
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 半透明の黒
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -226,11 +217,11 @@ const styles = StyleSheet.create({
     width: '80%',
     maxWidth: 400,
     alignItems: 'center',
-    shadowColor: '#000', // 影 (Webでも効く)
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5, // (Android用)
+    elevation: 5,
   },
   modalTitle: {
     fontSize: 20,
@@ -241,7 +232,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
-    lineHeight: 24, // 行間
+    lineHeight: 24,
   },
-  // ★★★ ここまで ★★★
 });
