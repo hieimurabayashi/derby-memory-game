@@ -91,16 +91,8 @@ export default function App() {
   const checkMatch = () => {
     const [first, second] = selectedCards;
 
-    // --- デバッグログ ---
-    console.log("--- チェック開始 ---");
-    console.log("カード1:", first.teamName, "(グループID:", first.derbyGroupId, ")");
-    console.log("カード2:", second.teamName, "(グループID:", second.derbyGroupId, ")");
-    // ---------------------
-
     if (first.derbyGroupId === second.derbyGroupId) {
       // --- マッチした ---
-      console.log("★ マッチ成功 ★ ダービー名:", first.derbyName); // これが表示されるか？
-
       setBoard(prevBoard =>
         prevBoard.map(card =>
           card.derbyGroupId === first.derbyGroupId
@@ -109,6 +101,7 @@ export default function App() {
         )
       );
       
+      // ★★★ アラートがここにあることを確認 ★★★
       Alert.alert(
         'マッチ！',
         `「${first.teamName}」 vs 「${second.teamName}」\n\n${first.derbyName}です！`
@@ -117,13 +110,11 @@ export default function App() {
       resetTurn();
     } else {
       // --- マッチしない ---
-      console.log("マッチ失敗 (グループIDが異なります)");
-
       setTimeout(() => {
         setBoard(prevBoard =>
           prevBoard.map(card =>
             card.cardId === first.cardId || card.cardId === second.cardId
-              ? { ...card, isMatched: false }
+              ? { ...card, isFlipped: false }
               : card
           )
         );
