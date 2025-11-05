@@ -88,13 +88,21 @@ export default function App() {
     setSelectedCards([...selectedCards, pressedCard]);
   };
 
-  // マッチ判定
   const checkMatch = () => {
     const [first, second] = selectedCards;
 
-    // 2枚の derbyGroupId が同じか？
+    // ★★★ デバッグ用ログ ★★★
+    console.log("チェック開始:", first.teamName, second.teamName);
+    console.log("グループID:", first.derbyGroupId, second.derbyGroupId);
+    // ★★★★★★★★★★★★★★★
+
     if (first.derbyGroupId === second.derbyGroupId) {
       // --- マッチした ---
+      
+      // ★★★ デバッグ用ログ ★★★
+      console.log("マッチ成功！ ダービー名:", first.derbyName);
+      // ★★★★★★★★★★★★★★★
+
       setBoard(prevBoard =>
         prevBoard.map(card =>
           card.derbyGroupId === first.derbyGroupId
@@ -102,24 +110,31 @@ export default function App() {
             : card
         )
       );
-      // ダービー名を表示
+      
+      // アラート (もしPCのブラウザがポップアップをブロックしていても、上のconsole.logは動くはず)
       Alert.alert(
         'マッチ！',
         `「${first.teamName}」 vs 「${second.teamName}」\n\n${first.derbyName}です！`
       );
+
       resetTurn();
     } else {
       // --- マッチしない ---
+      
+      // ★★★ デバッグ用ログ ★★★
+      console.log("マッチ失敗");
+      // ★★★★★★★★★★★★★★★
+
       setTimeout(() => {
         setBoard(prevBoard =>
           prevBoard.map(card =>
             card.cardId === first.cardId || card.cardId === second.cardId
-              ? { ...card, isFlipped: false }
+              ? { ...card, isMatched: false }
               : card
           )
         );
         resetTurn();
-      }, 1000); // 1秒後に戻す
+      }, 1000);
     }
   };
 
