@@ -8,7 +8,9 @@ import {
   ScrollView,
 } from 'react-native';
 
-// ★重要★ 上記で作成したファイル構成に基づいてインポート
+// ★重要★ ファイル構成が以下と一致しているか確認
+// ./src/data/derbies.ts
+// ./src/components/DerbyCard.tsx
 import { DERBY_LIST } from './src/data/derbies';
 import { DerbyCard } from './src/components/DerbyCard';
 
@@ -26,7 +28,6 @@ interface CardState {
 const createShuffledBoard = (): CardState[] => {
   const teamCards: Omit<CardState, 'cardId' | 'isFlipped' | 'isMatched'>[] = [];
 
-  // ダービーリストからチーム1とチーム2のカードを別々に生成
   DERBY_LIST.forEach(derby => {
     teamCards.push({
       derbyGroupId: derby.id,
@@ -40,7 +41,6 @@ const createShuffledBoard = (): CardState[] => {
     });
   });
 
-  // 16枚のチームカードをシャッフルし、IDを付与
   return teamCards
     .sort(() => Math.random() - 0.5)
     .map((card, index) => ({
@@ -55,7 +55,7 @@ const createShuffledBoard = (): CardState[] => {
 export default function App() {
   const [board, setBoard] = useState<CardState[]>(createShuffledBoard());
   const [selectedCards, setSelectedCards] = useState<CardState[]>([]);
-  const [isChecking, setIsChecking] = useState(false); // チェック中フラグ
+  const [isChecking, setIsChecking] = useState(false);
 
   // 2枚選択されたら判定
   useEffect(() => {
@@ -79,7 +79,6 @@ export default function App() {
     if (isChecking || pressedCard.isFlipped || pressedCard.isMatched) {
       return;
     }
-    // カードを表にする
     setBoard(prevBoard =>
       prevBoard.map(card =>
         card.cardId === pressedCard.cardId ? { ...card, isFlipped: true } : card
@@ -92,7 +91,6 @@ export default function App() {
   const checkMatch = () => {
     const [first, second] = selectedCards;
 
-    // 2枚の derbyGroupId が同じか？
     if (first.derbyGroupId === second.derbyGroupId) {
       // --- マッチした ---
       setBoard(prevBoard =>
@@ -102,11 +100,14 @@ export default function App() {
             : card
         )
       );
-      // ダービー名を表示
+      
+      // ★★★★★ アラート表示 ★★★★★
       Alert.alert(
         'マッチ！',
         `「${first.teamName}」 vs 「${second.teamName}」\n\n${first.derbyName}です！`
       );
+      // ★★★★★★★★★★★★★★★★★
+
       resetTurn();
     } else {
       // --- マッチしない ---
@@ -119,7 +120,7 @@ export default function App() {
           )
         );
         resetTurn();
-      }, 1000); // 1秒後に戻す
+      }, 1000);
     }
   };
 
@@ -144,7 +145,7 @@ export default function App() {
           {board.map(card => (
             <DerbyCard
               key={card.cardId}
-              teamName={card.teamName} // カードにチーム名を渡す
+              teamName={card.teamName} // ★ここでチーム名を渡す
               isFlipped={card.isFlipped}
               isMatched={card.isMatched}
               onPress={() => handleCardPress(card)}
