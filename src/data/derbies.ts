@@ -65,6 +65,6 @@ export const DERBY_LIST: Derby[] = [
     name: "スティール・シティ・ダービー", 
     team1: "シェフィールド U", team2: "シェフィールド W",
     team1Image: require('../../assets/images/sheffieldunited.png'),
-    team2Image: require('../../assets/images/sheffieldednesday.png'),
+    team2Image: require('../../assets/images/sheffieldesdnesday.png'),
   },
 ];
