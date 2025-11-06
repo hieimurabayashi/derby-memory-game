@@ -11,5 +11,5 @@
 <br><img width="2256" height="1504" alt="image" src="https://github.com/user-attachments/assets/37c412c3-c401-40f7-bbaa-fd3c758b816c" /><br>
 2. WEBで起動開始
 ## ゲーム開始時画面
-<br><img width="2256" height="1504" alt="image" src="https://github.com/user-attachments/assets/8705ba24-2714-44b4-9738-52e0565deb40" /><br>
+<br><img width="2256" height="1373" alt="スクリーンショット (7)" src="https://github.com/user-attachments/assets/bdb8280e-d6ea-4368-9260-913142344345" /><br>
 
