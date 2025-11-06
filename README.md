@@ -10,3 +10,6 @@
 1. ターミナルで*npx run web*を実行
 <br><img width="2256" height="1504" alt="image" src="https://github.com/user-attachments/assets/37c412c3-c401-40f7-bbaa-fd3c758b816c" /><br>
 2. WEBで起動開始
+## ゲーム開始時画面
+<br><img width="2256" height="1504" alt="image" src="https://github.com/user-attachments/assets/8705ba24-2714-44b4-9738-52e0565deb40" /><br>
+
