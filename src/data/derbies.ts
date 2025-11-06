@@ -15,15 +15,15 @@ export const DERBY_LIST: Derby[] = [
     id: 1, 
     name: "ノースロンドン・ダービー", 
     team1: "アーセナル", team2: "トッテナム",
-    team1Image: require('../../assets/images/arsenal.png'),      // ★ 画像パスを追記
-    team2Image: require('../../assets/images/tottenham.png'),    // ★ 画像パスを追記
+    team1Image: require('../../assets/images/arsenal.png'),     
+    team2Image: require('../../assets/images/tottenham.png'),    
   },
   { 
     id: 2, 
     name: "マンチェスター・ダービー", 
     team1: "マン C", team2: "マン U",
-    team1Image: require('../../assets/images/man_city.png'),
-    team2Image: require('../../assets/images/man_united.png'),
+    team1Image: require('../../assets/images/manchestercity.png'),
+    team2Image: require('../../assets/images/manchesterunited.png'),
   },
   { 
     id: 3, 
