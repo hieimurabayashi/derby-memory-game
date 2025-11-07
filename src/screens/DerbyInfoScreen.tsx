@@ -31,7 +31,7 @@ export const DerbyInfoScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView 
-        // ★ 修正点 1: 以下の行を削除 (style={styles.scrollView})
+        style={styles.scrollView} // ★ 修正点 1: この行を追加
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={true} 
       >
@@ -48,14 +48,15 @@ export const DerbyInfoScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // 親コンテナが画面全体の高さを確保 (これは正しい)
+    flex: 1, 
     backgroundColor: '#EFEFEF',
+    height: '100%', // ★ 修正点 2: この行を追加 (Webに高さを明示)
   },
   
-  // ★ 修正点 2: 以下の scrollView の定義を丸ごと削除
-  // scrollView: {
-  //   flex: 1,
-  // },
+  // ★ 修正点 3: 以下のスタイルを追加
+  scrollView: {
+    flex: 1, // ScrollView が親コンテナ(flex: 1)の中で伸縮するように
+  },
 
   scrollContent: {
     padding: 15, 
