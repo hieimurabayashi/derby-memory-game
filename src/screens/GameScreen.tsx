@@ -52,8 +52,8 @@ const createShuffledBoard = (): CardState[] => {
 };
 
 // --- アプリ本体 ---
-export default function GameScreen() {
-  const [board, setBoard] = useState<CardState[]>(createShuffledBoard());
+export const GameScreen = () => {  const 
+  [board, setBoard] = useState<CardState[]>(createShuffledBoard());
   const [selectedCards, setSelectedCards] = useState<CardState[]>([]);
   const [isChecking, setIsChecking] = useState(false);
 
