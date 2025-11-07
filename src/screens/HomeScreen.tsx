@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Button, StyleSheet, SafeAreaView, Text, Image } from 'react-native';
 
-// navigation プロパティを受け取る
 export const HomeScreen = ({ navigation }: { navigation: any }) => {
   return (
     <SafeAreaView style={styles.container}>
@@ -9,9 +8,6 @@ export const HomeScreen = ({ navigation }: { navigation: any }) => {
         <Text style={styles.title}>イングランド・ダービー</Text>
         <Text style={styles.subtitle}>神経衰弱</Text>
         
-        {/* ロゴ画像 (例: assets/images/logo.png など。不要ならこの行を削除) */}
-        {/* <Image source={require('../../assets/images/logo.png')} style={styles.logo} /> */}
-
         <View style={styles.buttonContainer}>
           <Button
             title="ゲームスタート"
@@ -21,8 +17,8 @@ export const HomeScreen = ({ navigation }: { navigation: any }) => {
         <View style={styles.buttonContainer}>
           <Button
             title="ダービーの背景"
-            color="#666" // ボタンの色を少し変える
-            onPress={() => navigation.navigate('Info')} // 'Info' 画面へ
+            color="#666" 
+            onPress={() => navigation.navigate('Info')} // ★ 'InfoPage1' ではなく 'Info' にする
           />
         </View>
       </View>
@@ -30,6 +26,7 @@ export const HomeScreen = ({ navigation }: { navigation: any }) => {
   );
 };
 
+// (スタイルは変更なし)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -61,6 +58,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '80%',
     maxWidth: 300,
-    marginVertical: 10, // ボタン間の余白
+    marginVertical: 10,
   },
 });
