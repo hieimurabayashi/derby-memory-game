@@ -15,7 +15,7 @@
 <br><img width="2256" height="1416" alt="スクリーンショット (9)" src="https://github.com/user-attachments/assets/457dfad1-959a-4600-92d4-1fd1f9231e62" /><br>
 ### ゲーム開始画面
 <br><img width="2256" height="1430" alt="スクリーンショット (10)" src="https://github.com/user-attachments/assets/de42e0ee-b221-4a9f-8ef1-e807f7652af9" /><br>
-### ダービーの背景
+### ダービーの背景画面
 <br><img width="2256" height="1419" alt="スクリーンショット (11)" src="https://github.com/user-attachments/assets/1a346492-dd5e-4432-beab-f569bc7daf4e" /><br>
 ## ダービーの背景
 1.**ノースロンドン・ダービー (アーセナル vs トッテナム)**<br>
