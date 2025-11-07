@@ -2,21 +2,17 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle } from 'react-native';
 
 interface Props {
-  name: string;
+  teamName: string; // カードに表示するチーム名
   isFlipped: boolean;
   isMatched: boolean;
   onPress: () => void;
 }
 
-export const DerbyCard: React.FC<Props> = ({ name, isFlipped, isMatched, onPress }) => {
+export const DerbyCard: React.FC<Props> = ({ teamName, isFlipped, isMatched, onPress }) => {
+  
   const cardStyle: ViewStyle[] = [styles.card];
-
-  if (isFlipped) {
-    cardStyle.push(styles.flipped);
-  }
-  if (isMatched) {
-    cardStyle.push(styles.matched);
-  }
+  if (isFlipped) cardStyle.push(styles.flipped);
+  if (isMatched) cardStyle.push(styles.matched);
 
   return (
     <TouchableOpacity
@@ -25,9 +21,9 @@ export const DerbyCard: React.FC<Props> = ({ name, isFlipped, isMatched, onPress
       disabled={isFlipped || isMatched}
     >
       {isFlipped || isMatched ? (
-        <Text style={styles.text}>{name}</Text>
+        <Text style={styles.text}>{teamName}</Text> // めくれたらチーム名表示
       ) : (
-        <Text style={styles.text}>?</Text>
+        <Text style={styles.text}>?</Text> // 裏面
       )}
     </TouchableOpacity>
   );
@@ -46,16 +42,18 @@ const styles = StyleSheet.create({
     borderColor: '#FFFFFF',
   },
   flipped: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FFFFFF', // 表面は白
   },
   matched: {
     backgroundColor: '#CCCCCC',
     opacity: 0.7,
   },
-  text: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#000000',
-  },
+ // src/components/DerbyCard.tsx の一番下
+
+ text: {
+  fontSize: 14,       // ★ 10 から 14 に変更
+  fontWeight: 'bold',
+  textAlign: 'center',
+  color: 'red',     // ★ '#000000' から 'red' に変更
+},
 });
