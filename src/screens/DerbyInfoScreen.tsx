@@ -30,8 +30,11 @@ const derbyInfos = [
 export const DerbyInfoScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
-      {/* ★ ここを <View> ではなく <ScrollView> にする */}
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      {/* ★ 修正点 1: style={styles.scrollView} を追加 */}
+      <ScrollView 
+        style={styles.scrollView} 
+        contentContainerStyle={styles.scrollContent}
+      >
         {derbyInfos.map((info, index) => (
           <View key={index} style={styles.infoBlock}>
             <Text style={styles.title}>{info.title}</Text>
@@ -45,11 +48,18 @@ export const DerbyInfoScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // ★ 親コンテナが画面全体に広がるようにする
+    flex: 1, 
     backgroundColor: '#EFEFEF',
   },
+  
+  // ★ 修正点 2: 以下のスタイルを追加
+  scrollView: {
+    flex: 1, // ScrollView 自体も高さを占めるようにする
+  },
+  // ★★★★★
+
   scrollContent: {
-    padding: 15, // スクロールする中身の余白
+    padding: 15, 
   },
   infoBlock: {
     marginBottom: 20,
