@@ -29,12 +29,11 @@ const derbyInfos = [
 
 export const DerbyInfoScreen = () => {
   return (
-    // ★ 修正点 1: SafeAreaView を View に変更
     <View style={styles.container}>
       <ScrollView 
-        style={styles.scrollView} 
+        // ★ 修正点 1: 以下の行を削除 (style={styles.scrollView})
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={true} // ★ 修正点 2: スクロールバーを明示的に表示
+        showsVerticalScrollIndicator={true} 
       >
         {derbyInfos.map((info, index) => (
           <View key={index} style={styles.infoBlock}>
@@ -49,14 +48,14 @@ export const DerbyInfoScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
+    flex: 1, // 親コンテナが画面全体の高さを確保 (これは正しい)
     backgroundColor: '#EFEFEF',
   },
   
-  scrollView: {
-    flex: 1, 
-  },
-
+  // ★ 修正点 2: 以下の scrollView の定義を丸ごと削除
+  // scrollView: {
+  //   flex: 1,
+  // },
 
   scrollContent: {
     padding: 15, 
