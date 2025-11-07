@@ -12,18 +12,17 @@ import {
 import { DERBY_LIST } from './src/data/derbies';
 import { DerbyCard } from './src/components/DerbyCard';
 
-// ★変更点★ CardState インターフェースに teamImage を追加
+// (CardState, createShuffledBoard 関数は変更なし)
 interface CardState {
   cardId: number;
   derbyGroupId: number;
-  teamName: string;   // テキストのアラート用に残しておく
-  teamImage: any;     // ★画像データ用
+  teamName: string;
+  teamImage: any;
   derbyName: string;
   isFlipped: boolean;
   isMatched: boolean;
 }
 
-// ★変更点★ createShuffledBoard 関数で teamImage もセットするように変更
 const createShuffledBoard = (): CardState[] => {
   const teamCards: Omit<CardState, 'cardId' | 'isFlipped' | 'isMatched'>[] = [];
 
@@ -31,13 +30,13 @@ const createShuffledBoard = (): CardState[] => {
     teamCards.push({
       derbyGroupId: derby.id,
       teamName: derby.team1,
-      teamImage: derby.team1Image, // ★画像データを追加
+      teamImage: derby.team1Image,
       derbyName: derby.name,
     });
     teamCards.push({
       derbyGroupId: derby.id,
       teamName: derby.team2,
-      teamImage: derby.team2Image, // ★画像データを追加
+      teamImage: derby.team2Image,
       derbyName: derby.name,
     });
   });
@@ -58,10 +57,16 @@ export default function App() {
   const [selectedCards, setSelectedCards] = useState<CardState[]>([]);
   const [isChecking, setIsChecking] = useState(false);
 
+  // Modal（モーダル）用の状態
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalText, setModalText] = useState("");
 
+  // ★★★ ターン制とスコア用のStateを追加 ★★★
+  const [currentPlayer, setCurrentPlayer] = useState<1 | 2>(1); // Player 1 からスタート
+  const [scores, setScores] = useState({ player1: 0, player2: 0 });
+
+  // (2枚選択の useEffect は変更なし)
   useEffect(() => {
     if (selectedCards.length === 2) {
       setIsChecking(true);
@@ -69,6 +74,7 @@ export default function App() {
     }
   }, [selectedCards]);
 
+  // (handleCardPress は変更なし)
   const handleCardPress = (pressedCard: CardState) => {
     if (isChecking || pressedCard.isFlipped || pressedCard.isMatched) {
       return;
@@ -81,12 +87,22 @@ export default function App() {
     setSelectedCards([...selectedCards, pressedCard]);
   };
 
+  // ★ マッチ判定 (スコアとターン交代ロジック追加)
   const checkMatch = () => {
     const [first, second] = selectedCards;
 
     if (first.derbyGroupId === second.derbyGroupId) {
+      // --- マッチした ---
+      
+      // ★ スコアを加算
+      const playerKey = currentPlayer === 1 ? 'player1' : 'player2';
+      // スコアを先に計算 (最終スコア判定のため)
+      const newScores = { ...scores, [playerKey]: scores[playerKey] + 1 };
+      
+      // これが最後のペアかどうかを、ボード更新「前」にチェック
       const isGameComplete = board.filter(card => !card.isMatched).length === 2;
 
+      // ボードの状態を更新 (マッチ済みにする)
       setBoard(prevBoard =>
         prevBoard.map(card =>
           card.derbyGroupId === first.derbyGroupId
@@ -95,16 +111,35 @@ export default function App() {
         )
       );
       
+      // ★ スコアのStateを更新
+      setScores(newScores);
+
       if (isGameComplete) {
+        // --- 最後のペアだった場合 ---
+        
+        // ★ 勝者判定
+        let winnerMessage = "";
+        if (newScores.player1 > newScores.player2) {
+          winnerMessage = "🏆 Player 1 の勝利！ 🏆";
+        } else if (newScores.player1 < newScores.player2) {
+          winnerMessage = "🏆 Player 2 の勝利！ 🏆";
+        } else {
+          winnerMessage = "引き分け！";
+        }
+
         setModalTitle("🎉コンプリート！🎉");
         setModalText(
-          `「${first.teamName}」 vs 「${second.teamName}」\n\n${first.derbyName}です！\n\n全てのダービーを見つけました！`
+          `「${first.teamName}」 vs 「${second.teamName}」\n${first.derbyName}です！\n\n` + // 最後のダービー名
+          `最終スコア:\nPlayer 1: ${newScores.player1}\nPlayer 2: ${newScores.player2}\n\n` + // 最終スコア
+          `${winnerMessage}` // 勝者
         );
         setIsModalVisible(true);
       } else {
+        // --- まだ途中のペアの場合 ---
         setModalTitle("マッチ！");
         setModalText(
-          `「${first.teamName}」 vs 「${second.teamName}」\n\n${first.derbyName}です！`
+          `「${first.teamName}」 vs 「${second.teamName}」\n\n${first.derbyName}です！\n\n` +
+          `Player ${currentPlayer} は続けてプレイします。` // ★ 連続ターン
         );
         setIsModalVisible(true);
       }
@@ -118,11 +153,14 @@ export default function App() {
               : card
           )
         );
-        resetTurn();
+        // ★ ターン交代
+        setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+        resetTurn(); // 選択をリセット
       }, 1000);
     }
   };
 
+  // ターンをリセット (選択カードを空にし、チェック中を解除)
   const resetTurn = () => {
     setSelectedCards([]);
     setIsChecking(false);
@@ -133,29 +171,54 @@ export default function App() {
     setSelectedCards([]);
     setIsChecking(false);
     setIsModalVisible(false);
+    // ★ プレイヤーとスコアもリセット
+    setCurrentPlayer(1);
+    setScores({ player1: 0, player2: 0 });
   };
 
+  // モーダルを閉じる
   const closeModal = () => {
-    setIsModalVisible(false);
+    setIsModalVisible(false); 
 
     const allMatched = board.every(card => card.isMatched);
     if (allMatched) {
+      // クリア後ならリセット
       resetGame();
     } else {
+      // 途中ならターンだけリセット (プレイヤーは交代しない)
       resetTurn();
     }
   };
 
-  // --- 画面表示 ---
+  // --- 画面表示 (JSX) ---
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        
+        {/* ★★★ スコアボードとターン表示を追加 ★★★ */}
+        <View style={styles.statusBar}>
+          <View style={[
+            styles.scoreBox, 
+            currentPlayer === 1 && styles.activePlayer // P1がアクティブならハイライト
+          ]}>
+            <Text style={styles.scoreText}>Player 1</Text>
+            <Text style={styles.scoreNumber}>{scores.player1}</Text>
+          </View>
+          <View style={[
+            styles.scoreBox, 
+            currentPlayer === 2 && styles.activePlayer // P2がアクティブならハイライト
+          ]}>
+            <Text style={styles.scoreText}>Player 2</Text>
+            <Text style={styles.scoreNumber}>{scores.player2}</Text>
+          </View>
+        </View>
+
+        {/* ゲームボード */}
         <View style={styles.board}>
           {board.map(card => (
             <DerbyCard
               key={card.cardId}
-              // teamName={card.teamName} // ★ teamName の代わりに teamImage を渡す
-              teamImage={card.teamImage} // ★ 画像データを渡す
+              teamImage={card.teamImage}
               isFlipped={card.isFlipped}
               isMatched={card.isMatched}
               onPress={() => handleCardPress(card)}
@@ -165,6 +228,7 @@ export default function App() {
         <Button title="リセット" onPress={resetGame} color="#CC0000" />
       </ScrollView>
 
+      {/* モーダル (変更なし) */}
       <Modal
         visible={isModalVisible}
         transparent={true}
@@ -184,7 +248,7 @@ export default function App() {
   );
 }
 
-// --- スタイル (変更なし) ---
+// --- スタイル (StatusBar用スタイルを追加) ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -196,6 +260,45 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     minHeight: '100%',
   },
+  
+  // ★★★ スコアボード用スタイル ★★★
+  statusBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around', // 左右に振り分け
+    width: '95%',
+    maxWidth: 500,
+    marginBottom: 10,
+  },
+  scoreBox: {
+    width: '45%',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#CCCCCC', // 通常時の枠線
+    alignItems: 'center',
+  },
+  activePlayer: {
+    borderColor: '#003366', // アクティブなプレイヤーの枠線 (濃い青)
+    shadowColor: '#003366',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  scoreText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333333',
+  },
+  scoreNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#003366',
+  },
+  // ★★★★★★★★★★★★★★★★★★★
+
   board: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -204,6 +307,8 @@ const styles = StyleSheet.create({
     maxWidth: 500,
     marginBottom: 20,
   },
+  
+  // (モーダル用スタイルは変更なし)
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
