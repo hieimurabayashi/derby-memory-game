@@ -1,6 +1,13 @@
 import React from 'react';
-import { ScrollView, Text, StyleSheet, SafeAreaView, View } from 'react-native';
+import { 
+  ScrollView, // ★ 画面をスクロールさせるために View から ScrollView に変更
+  Text, 
+  StyleSheet, 
+  SafeAreaView, 
+  View 
+} from 'react-native';
 
+// ダービーの由来データ (変更なし)
 const derbyInfos = [
   { title: "1. ノースロンドン・ダービー (アーセナル vs トッテナム)", 
     desc: "[地理と歴史の因縁] 元々アーセナルは南ロンドンにいましたが、1913年にトッテナムのすぐ近所である北ロンドンのハイベリーへ移転しました。さらに1919年、リーグが再編される際、2部5位だったアーセナルが（不正があったとも噂される）政治力で1部へ昇格し、代わりに1部だったトッテナムが2部へ降格させられた、という歴史的な因縁が対立の始まりです。" },
@@ -23,6 +30,7 @@ const derbyInfos = [
 export const DerbyInfoScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
+      {/* ★ ここを <View> ではなく <ScrollView> にする */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {derbyInfos.map((info, index) => (
           <View key={index} style={styles.infoBlock}>
@@ -37,14 +45,14 @@ export const DerbyInfoScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1, // ★ 親コンテナが画面全体に広がるようにする
     backgroundColor: '#EFEFEF',
   },
   scrollContent: {
-    padding: 15,
+    padding: 15, // スクロールする中身の余白
   },
   infoBlock: {
-    marginBottom: 20, // 各項目の間隔
+    marginBottom: 20,
     backgroundColor: '#FFFFFF',
     padding: 15,
     borderRadius: 8,
@@ -57,7 +65,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 15,
-    lineHeight: 22, // 行間
+    lineHeight: 22,
     color: '#333',
   },
 });
