@@ -9,8 +9,8 @@ import {
   Text,
 } from 'react-native';
 
-import { DERBY_LIST } from './src/data/derbies';
-import { DerbyCard } from './src/components/DerbyCard';
+import { DERBY_LIST } from '../data/derbies';
+import { DerbyCard } from '../components/DerbyCard';
 
 // (CardState, createShuffledBoard 関数は変更なし)
 interface CardState {
