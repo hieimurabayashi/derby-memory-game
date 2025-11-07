@@ -17,6 +17,9 @@
 <br><img width="2256" height="1430" alt="スクリーンショット (10)" src="https://github.com/user-attachments/assets/de42e0ee-b221-4a9f-8ef1-e807f7652af9" /><br>
 ### ダービーの背景画面
 <br><img width="2256" height="1419" alt="スクリーンショット (11)" src="https://github.com/user-attachments/assets/1a346492-dd5e-4432-beab-f569bc7daf4e" /><br>
+### ゲーム終了時画面一例
+<br><img width="2256" height="1430" alt="スクリーンショット (13)" src="https://github.com/user-attachments/assets/adf62325-2e70-46fe-9d1b-9981ebc902da" /><br>
+
 ## ダービーの背景
 1.**ノースロンドン・ダービー (アーセナル vs トッテナム)**<br>
 [地理と歴史の因縁] 元々アーセナルは南ロンドンにいましたが、1913年にトッテナムのすぐ近所である北ロンドンのハイベリーへ移転しました。さらに1919年、リーグが再編される際、2部5位だったアーセナルが（不正があったとも噂される）政治力で1部へ昇格し、代わりに1部だったトッテナムが2部へ降格させられた、という歴史的な因縁が対立の始まりです。
