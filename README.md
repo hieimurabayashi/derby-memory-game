@@ -10,9 +10,14 @@
 1. ターミナルで*npx run web*を実行
 <br><img width="2256" height="1504" alt="image" src="https://github.com/user-attachments/assets/37c412c3-c401-40f7-bbaa-fd3c758b816c" /><br>
 2. WEBで起動開始
-## ゲーム開始時画面
-<br><img width="2256" height="1373" alt="スクリーンショット (7)" src="https://github.com/user-attachments/assets/bdb8280e-d6ea-4368-9260-913142344345" /><br>
-## ダービーの由来
+## WEB起動後
+### タイトル画面
+<br><img width="2256" height="1416" alt="スクリーンショット (9)" src="https://github.com/user-attachments/assets/457dfad1-959a-4600-92d4-1fd1f9231e62" /><br>
+### ゲーム開始画面
+<br><img width="2256" height="1430" alt="スクリーンショット (10)" src="https://github.com/user-attachments/assets/de42e0ee-b221-4a9f-8ef1-e807f7652af9" /><br>
+### ダービーの背景
+<br><img width="2256" height="1419" alt="スクリーンショット (11)" src="https://github.com/user-attachments/assets/1a346492-dd5e-4432-beab-f569bc7daf4e" /><br>
+## ダービーの背景
 1.**ノースロンドン・ダービー (アーセナル vs トッテナム)**<br>
 [地理と歴史の因縁] 元々アーセナルは南ロンドンにいましたが、1913年にトッテナムのすぐ近所である北ロンドンのハイベリーへ移転しました。さらに1919年、リーグが再編される際、2部5位だったアーセナルが（不正があったとも噂される）政治力で1部へ昇格し、代わりに1部だったトッテナムが2部へ降格させられた、という歴史的な因縁が対立の始まりです。
 
