@@ -34,8 +34,8 @@ export const DERBY_LIST: Derby[] = [
   { 
     id: 2, name: "マンチェスター・ダービー", 
     team1: "マン C", team2: "マン U",
-    team1Image: require('../../assets/images/man_city.png'),
-    team2Image: require('../../assets/images/man_united.png'),
+    team1Image: require('../../assets/images/manchestercity.png'),
+    team2Image: require('../../assets/images/manchesterunited.png'),
     // エティハド・スタジアム
     team1Coord: { lat: 53.4831, lon: -2.2004 }, team1Stadium: "エティハド",
     // オールド・トラッフォード
