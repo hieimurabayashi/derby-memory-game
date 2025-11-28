@@ -45,11 +45,11 @@ export const EnglandMap: React.FC<Props> = ({ activeCoords, matchedDerby }) => {
       {/* 地図画像背景 */}
       {/* ★TODO: assets/images/england_map.png を用意して置き換えてください */}
       <Image
-        source={{ uri: 'https://via.placeholder.com/600x800/cccccc/000000?text=England+Map+Placeholder' }} // 仮のプレースホルダー
-        // source={require('../../assets/images/england_map.png')} // 本番用
-        style={styles.mapImage}
-        resizeMode="cover"
-      />
+  // source={{ uri: 'https://via.placeholder.com/600x800/cccccc/000000?text=England+Map+Placeholder' }} // 仮のプレースホルダー
+  source={require('../../assets/images/england_map.png')} // ★ここを有効にする
+  style={styles.mapImage}
+  resizeMode="contain" // ★地図全体が見えるように "contain" に変更するのがおすすめです
+/>
 
       {/* SVGレイヤー (線を引くため) */}
       {mapSize.width > 0 && (
