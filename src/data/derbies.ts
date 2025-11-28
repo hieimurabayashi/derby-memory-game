@@ -74,8 +74,8 @@ export const DERBY_LIST: Derby[] = [
   { 
     id: 6, name: "ブラックカントリー・ダービー", 
     team1: "WBA", team2: "ウルブス",
-    team1Image: require('../../assets/images/wba.png'), 
-    team2Image: require('../../assets/images/wolves.png'),
+    team1Image: require('../../assets/images/westbromwichalbion.png'), 
+    team2Image: require('../../assets/images/wolverhamoton.png'),
     // ザ・ホーソーンズ
     team1Coord: { lat: 52.5091, lon: -1.9639 }, team1Stadium: "ザ・ホーソーンズ",
     // モリニュー・スタジアム
@@ -94,8 +94,8 @@ export const DERBY_LIST: Derby[] = [
   { 
     id: 8, name: "スティール・シティ・ダービー", 
     team1: "シェフィールド U", team2: "シェフィールド W",
-    team1Image: require('../../assets/images/sheffield_u.png'),
-    team2Image: require('../../assets/images/sheffield_w.png'),
+    team1Image: require('../../assets/images/sheffieldwednesday.png'),
+    team2Image: require('../../assets/images/sheffieldunited.png'),
     // ブラモール・レーン
     team1Coord: { lat: 53.3703, lon: -1.4709 }, team1Stadium: "ブラモール・レーン",
     // ヒルズボロ・スタジアム
