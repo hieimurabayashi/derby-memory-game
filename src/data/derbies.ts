@@ -85,7 +85,7 @@ export const DERBY_LIST: Derby[] = [
     id: 7, name: "M23 ダービー", 
     team1: "ブライトン", team2: "C・パレス",
     team1Image: require('../../assets/images/brighton.png'),
-    team2Image: require('../../assets/images/crystal_palace.png'),
+    team2Image: require('../../assets/images/crystalpalace.png'),
     // アメックス・スタジアム
     team1Coord: { lat: 50.8618, lon: -0.0837 }, team1Stadium: "アメックス",
     // セルハースト・パーク
