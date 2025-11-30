@@ -177,8 +177,15 @@ export const GameScreen = () => {
       {/* 結果表示モーダル (既存) */}
       <Modal visible={isResultModalVisible} transparent={true} animationType="fade" onRequestClose={closeResultModal}>
         <View style={styles.modalOverlay}><View style={styles.modalContent}><Text style={styles.modalTitle}>{modalTitle}</Text><Text style={styles.modalBody}>{modalText}</Text>
-        {/* ★追加: 結果画面からもマップを開けるようにする */}
-        <Button title="🗺️ マップを見る" onPress={() => setIsMapModalVisible(true)} color="#003366"/>
+{/* ★修正: 結果画面を閉じてからマップを開くように変更 */}
+<Button 
+          title="🗺️ マップを見る" 
+          onPress={() => {
+            setIsResultModalVisible(false); // 先に結果画面を閉じる
+            setTimeout(() => setIsMapModalVisible(true), 300); // 0.3秒後にマップを開く
+          }} 
+          color="#003366"
+        />
         <View style={{marginTop:10}}><Button title="閉じる" onPress={closeResultModal} /></View>
         </View></View>
       </Modal>
