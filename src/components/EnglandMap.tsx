@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
-import { View, Image, StyleSheet, Text, LayoutChangeEvent } from 'react-native';
-import Svg, { Line } from 'react-native-svg'; // SVGライブラリ
+import { View, Image, StyleSheet, Text, LayoutChangeEvent, Dimensions } from 'react-native';
+import Svg, { Line } from 'react-native-svg';
 import { Coordinate, Derby } from '../data/derbies';
 import { calculateDistance, getRelativePosition } from '../utils/mapHelpers';
 
 interface Props {
-  activeCoords: Coordinate[]; // 現在めくられているカードの座標リスト
-  matchedDerby: Derby | null; // 直近でマッチしたダービー情報（線引く用）
+  activeCoords: Coordinate[];
+  matchedDerby: Derby | null;
 }
 
 export const EnglandMap: React.FC<Props> = ({ activeCoords, matchedDerby }) => {
   const [mapSize, setMapSize] = useState({ width: 0, height: 0 });
 
-  // 地図の表示サイズを取得する
   const onLayout = (event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
     setMapSize({ width, height });
   };
 
-  // 座標を画面上のピクセル位置に変換するヘルパー
   const toPixel = (coord: Coordinate) => {
     const rel = getRelativePosition(coord);
     return {
@@ -27,65 +25,63 @@ export const EnglandMap: React.FC<Props> = ({ activeCoords, matchedDerby }) => {
     };
   };
 
-  // マッチ時の情報計算（線と距離）
   let matchInfo = null;
   if (matchedDerby && mapSize.width > 0) {
     const p1 = toPixel(matchedDerby.team1Coord);
     const p2 = toPixel(matchedDerby.team2Coord);
     const distance = calculateDistance(matchedDerby.team1Coord, matchedDerby.team2Coord);
-    // 距離ラベルの表示位置（中間点）
     const midX = (p1.x + p2.x) / 2;
     const midY = (p1.y + p2.y) / 2;
-
     matchInfo = { p1, p2, distance, midX, midY };
   }
 
   return (
-    <View style={styles.container} onLayout={onLayout}>
-      {/* 地図画像背景 */}
-      {/* ★TODO: assets/images/england_map.png を用意して置き換えてください */}
-      <Image
-        source={require('../../assets/images/england_map.png')}
-        style={styles.mapImage}
-        resizeMode="stretch" // ★ここを "contain" から "stretch" に変更
-      />
+    <View style={styles.container}>
+      {/* ★修正ポイント: 
+        地図を囲む View (mapWrapper) を作り、アスペクト比を固定します。
+        aspectRatio: 0.75 (横:縦 = 3:4) くらいが英国地図には一般的です。
+      */}
+      <View style={styles.mapWrapper} onLayout={onLayout}>
+        <Image
+          source={require('../../assets/images/england_map.png')}
+          style={styles.mapImage}
+          resizeMode="stretch" // 比率を固定した枠に対してストレッチするので歪まない
+        />
 
-      {/* SVGレイヤー (線を引くため) */}
-      {mapSize.width > 0 && (
-        <Svg height={mapSize.height} width={mapSize.width} style={StyleSheet.absoluteFill}>
-          {matchInfo && (
-            <Line
-              x1={matchInfo.p1.x}
-              y1={matchInfo.p1.y}
-              x2={matchInfo.p2.x}
-              y2={matchInfo.p2.y}
-              stroke="red"
-              strokeWidth="3"
-              strokeDasharray="5, 5" // 点線にする
-            />
-          )}
-        </Svg>
-      )}
+        {mapSize.width > 0 && (
+          <Svg height={mapSize.height} width={mapSize.width} style={StyleSheet.absoluteFill}>
+            {matchInfo && (
+              <Line
+                x1={matchInfo.p1.x}
+                y1={matchInfo.p1.y}
+                x2={matchInfo.p2.x}
+                y2={matchInfo.p2.y}
+                stroke="red"
+                strokeWidth="3"
+                strokeDasharray="5, 5"
+              />
+            )}
+          </Svg>
+        )}
 
-      {/* 距離ラベル表示 */}
-      {matchInfo && (
-        <View style={[styles.distanceLabelBox, { left: matchInfo.midX - 40, top: matchInfo.midY - 15 }]}>
-          <Text style={styles.distanceText}>{matchInfo.distance} km</Text>
-        </View>
-      )}
-
-      {/* マーカー表示 (現在選択中のチーム) */}
-      {mapSize.width > 0 && activeCoords.map((coord, index) => {
-        const pixel = toPixel(coord);
-        return (
-          <View
-            key={index}
-            style={[styles.marker, { left: pixel.x - 10, top: pixel.y - 10 }]}
-          >
-            <View style={styles.markerInner} />
+        {matchInfo && (
+          <View style={[styles.distanceLabelBox, { left: matchInfo.midX - 40, top: matchInfo.midY - 15 }]}>
+            <Text style={styles.distanceText}>{matchInfo.distance} km</Text>
           </View>
-        );
-      })}
+        )}
+
+        {mapSize.width > 0 && activeCoords.map((coord, index) => {
+          const pixel = toPixel(coord);
+          return (
+            <View
+              key={index}
+              style={[styles.marker, { left: pixel.x - 10, top: pixel.y - 10 }]}
+            >
+              <View style={styles.markerInner} />
+            </View>
+          );
+        })}
+      </View>
     </View>
   );
 };
@@ -93,10 +89,16 @@ export const EnglandMap: React.FC<Props> = ({ activeCoords, matchedDerby }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#A0C8F0',
+    alignItems: 'center', // 中央寄せ
+    justifyContent: 'center',
+    width: '100%',
+  },
+  // ★追加: 地図の比率を固定するラッパー
+  mapWrapper: {
+    width: '100%',
+    aspectRatio: 0.75, // ★ここが重要：横幅に対して高さを固定比率にする (0.75 = 4:3の縦長)
     position: 'relative',
-    backgroundColor: '#A0C8F0', // 海の色っぽい背景
-    borderRadius: 16,
-    overflow: 'hidden',
   },
   mapImage: {
     width: '100%',
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: 'rgba(255, 0, 0, 0.3)', // 赤く光るエフェクト
+    backgroundColor: 'rgba(255, 0, 0, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -115,7 +117,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: 'red', // 中心の点
+    backgroundColor: 'red',
     borderWidth: 1,
     borderColor: 'white',
   },
@@ -129,6 +131,7 @@ const styles = StyleSheet.create({
     borderColor: 'red',
     width: 80,
     alignItems: 'center',
+    zIndex: 10, // ラベルを最前面に
   },
   distanceText: {
     fontWeight: 'bold',
