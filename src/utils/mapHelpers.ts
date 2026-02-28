@@ -1,57 +1,72 @@
+import React, { useCallback, useState } from 'react';
+import { GoogleMap, useLoadScript, Marker, Polyline } from '@react-google-maps/api';
 import { Coordinate } from '../data/derbies';
 
-// --- 距離計算 (変更なし) ---
-export const calculateDistance = (coord1: Coordinate, coord2: Coordinate): number => {
-  const R = 6371; 
-  const dLat = deg2rad(coord2.lat - coord1.lat);
-  const dLon = deg2rad(coord2.lon - coord1.lon);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(deg2rad(coord1.lat)) * Math.cos(deg2rad(coord2.lat)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c;
-  return Math.round(distance * 10) / 10;
+// 水色のコンテナに合わせるためのスタイル設定
+const containerStyle = {
+  width: '100%',
+  height: '100%',
 };
 
-const deg2rad = (deg: number): number => {
-  return deg * (Math.PI / 180);
-};
+interface DerbyMapProps {
+  teamACoord: Coordinate;
+  teamBCoord: Coordinate;
+}
 
-// --- メルカトル図法用の緯度変換関数を追加 ---
-// 緯度をメルカトル投影上のY座標（比率）に変換するための数式です
-const latToMercatorY = (lat: number): number => {
-  const rad = deg2rad(lat);
-  return Math.log(Math.tan(Math.PI / 4 + rad / 2));
-};
+export const DerbyMap: React.FC<DerbyMapProps> = ({ teamACoord, teamBCoord }) => {
+  // Google Maps APIキーを設定（環境変数に入れることをおすすめします）
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY_HERE',
+  });
 
-// --- 地図画像とのマッピング設定 ---
-// ★ 無理やり広げるのをやめて、実際のイギリス周辺の正確な緯度経度に近づけます
-// ※お使いの地図画像(SVGなど)の余白に合わせて、ここは微調整してください
-const MAP_BOUNDS = {
-  NORTH: 58.7, // スコットランド北端あたり
-  SOUTH: 49.9, // イングランド南端あたり
-  WEST: -8.2,  // アイルランド西端あたり (地図画像に含まれる西の端)
-  EAST: 1.8,   // イングランド東端あたり (本来の正しい経度)
-};
+  const [map, setMap] = useState<google.maps.Map | null>(null);
 
-// 緯度経度を、地図画像上のパーセント位置(0.0〜1.0)に変換する関数
-export const getRelativePosition = (coord: Coordinate) => {
-  // 経度はそのまま線形計算でOK（X軸は歪まないため）
-  const lonRange = MAP_BOUNDS.EAST - MAP_BOUNDS.WEST;
-  const leftPercent = (coord.lon - MAP_BOUNDS.WEST) / lonRange;
+  // 地図が読み込まれた時に、2つのピンが画面に収まるように視点を調整する
+  const onLoad = useCallback((mapInstance: google.maps.Map) => {
+    const bounds = new window.google.maps.LatLngBounds();
+    // チームAとチームBの座標をBounds（境界）に追加
+    bounds.extend({ lat: teamACoord.lat, lng: teamACoord.lon });
+    bounds.extend({ lat: teamBCoord.lat, lng: teamBCoord.lon });
+    
+    // 境界に合わせて地図を自動ズーム＆センタリング
+    mapInstance.fitBounds(bounds);
+    
+    setMap(mapInstance);
+  }, [teamACoord, teamBCoord]);
 
-  // 緯度はメルカトル変換をかけてからパーセントを計算する
-  const topY = latToMercatorY(MAP_BOUNDS.NORTH);
-  const bottomY = latToMercatorY(MAP_BOUNDS.SOUTH);
-  const currentY = latToMercatorY(coord.lat);
-  
-  const yRange = topY - bottomY;
-  // 北が上(0.0)、南が下(1.0)になるように反転して計算
-  const topPercent = (topY - currentY) / yRange;
+  const onUnmount = useCallback(() => {
+    setMap(null);
+  }, []);
 
-  return {
-    x: leftPercent, // 0.0(左端) 〜 1.0(右端)
-    y: topPercent,  // 0.0(上端) 〜 1.0(下端)
-  };
+  if (!isLoaded) return <div>Map Loading...</div>;
+
+  // Polyline用のパス（2点間に直線を引くオプション）
+  const path = [
+    { lat: teamACoord.lat, lng: teamACoord.lon },
+    { lat: teamBCoord.lat, lng: teamBCoord.lon }
+  ];
+
+  return (
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      onLoad={onLoad}
+      onUnmount={onUnmount}
+      options={{
+        disableDefaultUI: true, // 余計なUI（ストリートビューなど）を消してすっきりさせる
+        zoomControl: true,      // ズームボタンだけ残す
+      }}
+    >
+      {/* チームAのピン */}
+      <Marker position={{ lat: teamACoord.lat, lng: teamACoord.lon }} />
+      
+      {/* チームBのピン */}
+      <Marker position={{ lat: teamBCoord.lat, lng: teamBCoord.lon }} />
+
+      {/* （おまけ）2つのスタジアムの間に直線を引く */}
+      <Polyline
+        path={path}
+        options={{ strokeColor: '#FF0000', strokeWeight: 2, strokeOpacity: 0.8 }}
+      />
+    </GoogleMap>
+  );
 };
