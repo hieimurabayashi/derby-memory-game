@@ -1,9 +1,8 @@
 import { Coordinate } from '../data/derbies';
 
-// 2点間の距離を計算する関数 (Haversine formula)
-// 戻り値はキロメートル(km)
+// --- 距離計算 (変更なし) ---
 export const calculateDistance = (coord1: Coordinate, coord2: Coordinate): number => {
-  const R = 6371; // 地球の半径 (km)
+  const R = 6371; 
   const dLat = deg2rad(coord2.lat - coord1.lat);
   const dLon = deg2rad(coord2.lon - coord1.lon);
   const a =
@@ -12,34 +11,44 @@ export const calculateDistance = (coord1: Coordinate, coord2: Coordinate): numbe
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = R * c;
-  return Math.round(distance * 10) / 10; // 小数点第1位まで丸める
+  return Math.round(distance * 10) / 10;
 };
 
 const deg2rad = (deg: number): number => {
   return deg * (Math.PI / 180);
 };
 
-// ... (前半は変更なし)
-
-// --- 地図画像とのマッピング設定 ---
-const MAP_BOUNDS = {
-  NORTH: 60.0, // 北端 (少し広げました)
-  SOUTH: 49.5, // 南端
-  WEST: -11.0, // 西端
-  EAST: 6.0,   // ★ここを「2.0」から「6.0」へ大幅に変更 (ピンを左へ動かすため)
+// --- メルカトル図法用の緯度変換関数を追加 ---
+// 緯度をメルカトル投影上のY座標（比率）に変換するための数式です
+const latToMercatorY = (lat: number): number => {
+  const rad = deg2rad(lat);
+  return Math.log(Math.tan(Math.PI / 4 + rad / 2));
 };
 
-// ... (後半は変更なし)
+// --- 地図画像とのマッピング設定 ---
+// ★ 無理やり広げるのをやめて、実際のイギリス周辺の正確な緯度経度に近づけます
+// ※お使いの地図画像(SVGなど)の余白に合わせて、ここは微調整してください
+const MAP_BOUNDS = {
+  NORTH: 58.7, // スコットランド北端あたり
+  SOUTH: 49.9, // イングランド南端あたり
+  WEST: -8.2,  // アイルランド西端あたり (地図画像に含まれる西の端)
+  EAST: 1.8,   // イングランド東端あたり (本来の正しい経度)
+};
 
 // 緯度経度を、地図画像上のパーセント位置(0.0〜1.0)に変換する関数
 export const getRelativePosition = (coord: Coordinate) => {
-  const latRange = MAP_BOUNDS.NORTH - MAP_BOUNDS.SOUTH;
+  // 経度はそのまま線形計算でOK（X軸は歪まないため）
   const lonRange = MAP_BOUNDS.EAST - MAP_BOUNDS.WEST;
-
-  // 上からの位置 (緯度は北の方が値が大きいので反転)
-  const topPercent = (MAP_BOUNDS.NORTH - coord.lat) / latRange;
-  // 左からの位置
   const leftPercent = (coord.lon - MAP_BOUNDS.WEST) / lonRange;
+
+  // 緯度はメルカトル変換をかけてからパーセントを計算する
+  const topY = latToMercatorY(MAP_BOUNDS.NORTH);
+  const bottomY = latToMercatorY(MAP_BOUNDS.SOUTH);
+  const currentY = latToMercatorY(coord.lat);
+  
+  const yRange = topY - bottomY;
+  // 北が上(0.0)、南が下(1.0)になるように反転して計算
+  const topPercent = (topY - currentY) / yRange;
 
   return {
     x: leftPercent, // 0.0(左端) 〜 1.0(右端)
