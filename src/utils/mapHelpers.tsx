@@ -2,12 +2,11 @@ import React, { useCallback, useState } from 'react';
 import { GoogleMap, useLoadScript, Marker, Polyline } from '@react-google-maps/api';
 import { Coordinate } from '../data/derbies';
 
-// 水色のコンテナに合わせるためのスタイル設定
+// mapHelpers.tsx の上部
 const containerStyle = {
   width: '100%',
-  height: '100%',
+  height: '400px', // ★ '100%' から '400px' などの固定値に変更してテスト！
 };
-
 interface DerbyMapProps {
   teamACoord: Coordinate;
   teamBCoord: Coordinate;
