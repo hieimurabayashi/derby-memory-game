@@ -153,7 +153,8 @@ export const GameScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-<ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContainer}>        <View style={styles.statusBar}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.statusBar}>
           <View style={[styles.scoreBox, currentPlayer === 1 && styles.activePlayer]}><Text style={styles.scoreText}>Player 1</Text><Text style={styles.scoreNumber}>{scores.player1}</Text></View>
           <View style={[styles.scoreBox, currentPlayer === 2 && styles.activePlayer]}><Text style={styles.scoreText}>Player 2</Text><Text style={styles.scoreNumber}>{scores.player2}</Text></View>
         </View>
@@ -216,11 +217,11 @@ export const GameScreen = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#EFEFEF' },
 // 修正後
-scrollContainer: { 
+ scrollContainer: { 
   alignItems: 'center', 
   paddingVertical: 20,
   paddingBottom: 60, // ★ 下に余裕を持たせる（これがないと一番下のカードが押しづらい）
-},  statusBar: { flexDirection: 'row', justifyContent: 'space-around', width: '95%', maxWidth: 500, marginBottom: 10 },
+},statusBar: { flexDirection: 'row', justifyContent: 'space-around', width: '95%', maxWidth: 500, marginBottom: 10 },
   scoreBox: { width: '45%', paddingVertical: 8, backgroundColor: '#FFFFFF', borderRadius: 8, borderWidth: 2, borderColor: '#CCCCCC', alignItems: 'center' },
   activePlayer: { borderColor: '#003366', elevation: 5 },
   scoreText: { fontSize: 16, fontWeight: 'bold', color: '#333' },
